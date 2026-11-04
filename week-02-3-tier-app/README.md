@@ -70,6 +70,11 @@ docker compose version
 ## Environment variables
 
 ## API endpoints
+All requests go through nginx on port 8080 (for example `curl localhost:8080/notes`).
+
+- `GET /health`: returns 200 when the API can reach the database, 503 when it can't.
+- `GET /notes`: returns every note as a JSON list.
+- `POST /notes`: saves a note sent as JSON, like `{"text": "my first note"}`, and returns it with status 201. Without `text` it returns 400.
 
 ## Design decisions
 
