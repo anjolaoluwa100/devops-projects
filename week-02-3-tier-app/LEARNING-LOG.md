@@ -11,3 +11,10 @@
 - `docker exec -it web sh`: opens a shell inside a running container. `-it` makes it interactive, and `sh` is the shell.
 - Deleting a container doesn't delete its image. `nginx:alpine` was still in `docker images`, so I could start a new container from it straight away without downloading anything.
 - Ran the API without Docker first, against a throwaway Postgres container, so any later bug will be a Docker problem, not a code problem. The app must listen on 0.0.0.0 to be reachable from outside.
+
+## Day 3
+- Multi-stage build: the first stage (builder) installs the Python packages. The final stage copies in only the installed packages and app.py, so pip and its leftovers stay behind and the image is smaller.
+- requirements.txt is copied before app.py so Docker can cache the slow pip install layer. Changing app.py only reruns the last COPY step.
+- Image size: notes-api:v1 is about 97 MB (DISK USAGE in docker images), well under the 200 MB limit.
+- Non-root: the API runs as a user called app, not root, so if the app were ever broken into, the attacker would only get that user's limited permissions.
+- Experiment: the same app built single-stage on the full python:3.12 image was about 1 GB.

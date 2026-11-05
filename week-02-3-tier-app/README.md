@@ -77,6 +77,12 @@ All requests go through nginx on port 8080 (for example `curl localhost:8080/not
 - `POST /notes`: saves a note sent as JSON, like `{"text": "my first note"}`, and returns it with status 201. Without `text` it returns 400.
 
 ## Design decisions
+### Image
+- **Multi-stage build:** dependencies are installed in a `builder` stage, and only the installed packages are copied into the final image, so pip's build leftovers never ship.
+- **Alpine base (`python:3.12-alpine`):** a much smaller base than the full Python image. The final API image is about 97 MB (limit: 200 MB).
+- **Non-root user:** the container runs as a system user called `app`, so a compromised app doesn't get root inside the container.
+- **`.dockerignore`:** keeps caches, `.env` and git files out of the build, so secrets never end up in the image and builds stay fast.
+- **Layer caching:** `requirements.txt` is copied and installed before `app.py`, so a code change doesn't trigger a full reinstall.
 
 ## Tests and evidence
 
